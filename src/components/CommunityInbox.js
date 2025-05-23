@@ -1,0 +1,391 @@
+import React, { useState } from 'react';
+import { MessageCircle, Users, Shield, Search, Plus, Settings, Bell, Lock } from 'lucide-react';
+import './CommunityInbox.css';
+
+const CommunityInbox = ({ view }) => {
+  const [selectedCommunity, setSelectedCommunity] = useState('marketing-agency');
+  const [selectedConversation, setSelectedConversation] = useState(null);
+
+  // Mock data for communities and conversations
+  const communities = [
+    {
+      id: 'marketing-agency',
+      name: 'Marketing Agency Pro',
+      members: 24,
+      unread: 3,
+      color: '#667eea',
+      description: 'Professional marketing strategies and growth hacking'
+    },
+    {
+      id: 'startup-founders',
+      name: 'Startup Founders Hub',
+      members: 156,
+      unread: 7,
+      color: '#f093fb',
+      description: 'Connect with fellow entrepreneurs and share insights'
+    },
+    {
+      id: 'design-collective',
+      name: 'Design Collective',
+      members: 89,
+      unread: 2,
+      color: '#4facfe',
+      description: 'Creative professionals sharing design trends'
+    },
+    {
+      id: 'tech-innovators',
+      name: 'Tech Innovators',
+      members: 203,
+      unread: 12,
+      color: '#43e97b',
+      description: 'Latest in technology and innovation'
+    }
+  ];
+
+  const conversations = [
+    {
+      id: 1,
+      community: 'marketing-agency',
+      participant: 'Sarah Chen',
+      lastMessage: 'The new campaign strategy looks promising. Should we schedule a call?',
+      timestamp: '2 min ago',
+      unread: true,
+      avatar: '👩‍💼'
+    },
+    {
+      id: 2,
+      community: 'marketing-agency',
+      participant: 'Mike Rodriguez',
+      lastMessage: 'Thanks for sharing the analytics report. The conversion rates are impressive.',
+      timestamp: '15 min ago',
+      unread: true,
+      avatar: '👨‍💻'
+    },
+    {
+      id: 3,
+      community: 'startup-founders',
+      participant: 'Alex Thompson',
+      lastMessage: 'Looking for feedback on our MVP. Would love to get your thoughts.',
+      timestamp: '1 hour ago',
+      unread: true,
+      avatar: '🚀'
+    },
+    {
+      id: 4,
+      community: 'design-collective',
+      participant: 'Emma Wilson',
+      lastMessage: 'The new design system is ready for review. Check it out!',
+      timestamp: '2 hours ago',
+      unread: false,
+      avatar: '🎨'
+    },
+    {
+      id: 5,
+      community: 'tech-innovators',
+      participant: 'David Park',
+      lastMessage: 'Interesting article about AI trends. Thought you might find it useful.',
+      timestamp: '3 hours ago',
+      unread: true,
+      avatar: '🤖'
+    }
+  ];
+
+  const renderUnifiedView = () => (
+    <div className="unified-view">
+      <div className="inbox-sidebar">
+        <div className="sidebar-header">
+          <h2><MessageCircle size={20} /> All Communities</h2>
+          <div className="header-actions">
+            <button className="icon-button"><Search size={16} /></button>
+            <button className="icon-button"><Plus size={16} /></button>
+            <button className="icon-button"><Settings size={16} /></button>
+          </div>
+        </div>
+        
+        <div className="community-filter">
+          <select 
+            value={selectedCommunity} 
+            onChange={(e) => setSelectedCommunity(e.target.value)}
+            className="community-select"
+          >
+            <option value="">All Communities</option>
+            {communities.map(community => (
+              <option key={community.id} value={community.id}>
+                {community.name} ({community.unread} unread)
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="conversations-list">
+          {conversations
+            .filter(conv => !selectedCommunity || conv.community === selectedCommunity)
+            .map(conversation => (
+              <div 
+                key={conversation.id} 
+                className={`conversation-item ${conversation.unread ? 'unread' : ''} ${selectedConversation === conversation.id ? 'selected' : ''}`}
+                onClick={() => setSelectedConversation(conversation.id)}
+              >
+                <div className="conversation-avatar">{conversation.avatar}</div>
+                <div className="conversation-content">
+                  <div className="conversation-header">
+                    <span className="participant-name">{conversation.participant}</span>
+                    <span className="community-badge" style={{ backgroundColor: communities.find(c => c.id === conversation.community)?.color }}>
+                      {communities.find(c => c.id === conversation.community)?.name}
+                    </span>
+                  </div>
+                  <div className="last-message">{conversation.lastMessage}</div>
+                  <div className="conversation-meta">
+                    <span className="timestamp">{conversation.timestamp}</span>
+                    {conversation.unread && <div className="unread-indicator"></div>}
+                    <Lock size={12} className="encryption-icon" title="End-to-end encrypted" />
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+
+      <div className="chat-area">
+        {selectedConversation ? (
+          <div className="chat-content">
+            <div className="chat-header">
+              <div className="chat-participant">
+                <span className="participant-avatar">
+                  {conversations.find(c => c.id === selectedConversation)?.avatar}
+                </span>
+                <div>
+                  <h3>{conversations.find(c => c.id === selectedConversation)?.participant}</h3>
+                  <span className="community-context">
+                    in {communities.find(c => c.id === conversations.find(conv => conv.id === selectedConversation)?.community)?.name}
+                  </span>
+                </div>
+              </div>
+              <div className="chat-actions">
+                <button className="icon-button"><Bell size={16} /></button>
+                <button className="icon-button"><Shield size={16} /></button>
+              </div>
+            </div>
+            <div className="messages-area">
+              <div className="encryption-notice">
+                <Lock size={14} />
+                <span>Messages are end-to-end encrypted</span>
+              </div>
+              <div className="message-placeholder">
+                <p>Select a conversation to start messaging</p>
+              </div>
+            </div>
+            <div className="message-input">
+              <input type="text" placeholder="Type your message..." />
+              <button className="send-button">Send</button>
+            </div>
+          </div>
+        ) : (
+          <div className="no-conversation">
+            <MessageCircle size={48} />
+            <h3>Select a conversation</h3>
+            <p>Choose a conversation from the sidebar to start messaging</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderTabbedView = () => (
+    <div className="tabbed-view">
+      <div className="community-tabs">
+        {communities.map(community => (
+          <button
+            key={community.id}
+            className={`community-tab ${selectedCommunity === community.id ? 'active' : ''}`}
+            onClick={() => setSelectedCommunity(community.id)}
+            style={{ borderBottomColor: selectedCommunity === community.id ? community.color : 'transparent' }}
+          >
+            <span className="tab-name">{community.name}</span>
+            {community.unread > 0 && <span className="tab-badge">{community.unread}</span>}
+          </button>
+        ))}
+      </div>
+      
+      <div className="tab-content">
+        {selectedCommunity && (
+          <div className="community-inbox">
+            <div className="community-header">
+              <h2 style={{ color: communities.find(c => c.id === selectedCommunity)?.color }}>
+                {communities.find(c => c.id === selectedCommunity)?.name}
+              </h2>
+              <p>{communities.find(c => c.id === selectedCommunity)?.description}</p>
+              <div className="community-stats">
+                <span><Users size={14} /> {communities.find(c => c.id === selectedCommunity)?.members} members</span>
+                <span><Lock size={14} /> End-to-end encrypted</span>
+              </div>
+            </div>
+            
+            <div className="community-conversations">
+              {conversations
+                .filter(conv => conv.community === selectedCommunity)
+                .map(conversation => (
+                  <div key={conversation.id} className={`conversation-card ${conversation.unread ? 'unread' : ''}`}>
+                    <div className="conversation-avatar">{conversation.avatar}</div>
+                    <div className="conversation-details">
+                      <h4>{conversation.participant}</h4>
+                      <p>{conversation.lastMessage}</p>
+                      <span className="timestamp">{conversation.timestamp}</span>
+                    </div>
+                    {conversation.unread && <div className="unread-dot"></div>}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderSidebarView = () => (
+    <div className="sidebar-view">
+      <div className="communities-sidebar">
+        <div className="sidebar-header">
+          <h2>Communities</h2>
+          <button className="icon-button"><Plus size={16} /></button>
+        </div>
+        
+        <div className="communities-list">
+          {communities.map(community => (
+            <div
+              key={community.id}
+              className={`community-item ${selectedCommunity === community.id ? 'active' : ''}`}
+              onClick={() => setSelectedCommunity(community.id)}
+            >
+              <div className="community-icon" style={{ backgroundColor: community.color }}>
+                {community.name.charAt(0)}
+              </div>
+              <div className="community-info">
+                <h4>{community.name}</h4>
+                <span>{community.members} members</span>
+              </div>
+              {community.unread > 0 && (
+                <div className="unread-count">{community.unread}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="main-inbox">
+        {selectedCommunity ? (
+          <div className="community-messages">
+            <div className="inbox-header">
+              <h2>{communities.find(c => c.id === selectedCommunity)?.name}</h2>
+              <div className="header-actions">
+                <button className="icon-button"><Search size={16} /></button>
+                <button className="icon-button"><Settings size={16} /></button>
+              </div>
+            </div>
+            
+            <div className="messages-list">
+              {conversations
+                .filter(conv => conv.community === selectedCommunity)
+                .map(conversation => (
+                  <div key={conversation.id} className={`message-item ${conversation.unread ? 'unread' : ''}`}>
+                    <div className="message-avatar">{conversation.avatar}</div>
+                    <div className="message-content">
+                      <div className="message-header">
+                        <span className="sender-name">{conversation.participant}</span>
+                        <span className="message-time">{conversation.timestamp}</span>
+                      </div>
+                      <p className="message-text">{conversation.lastMessage}</p>
+                    </div>
+                    <Lock size={12} className="encryption-icon" />
+                  </div>
+                ))}
+            </div>
+          </div>
+        ) : (
+          <div className="no-community">
+            <Users size={48} />
+            <h3>Select a community</h3>
+            <p>Choose a community from the sidebar to view messages</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderCardView = () => (
+    <div className="card-view">
+      <div className="view-header">
+        <h2>Community Inboxes</h2>
+        <p>Manage all your community conversations in one place</p>
+      </div>
+      
+      <div className="communities-grid">
+        {communities.map(community => (
+          <div key={community.id} className="community-card">
+            <div className="card-header" style={{ backgroundColor: community.color }}>
+              <h3>{community.name}</h3>
+              <div className="card-stats">
+                <span><Users size={14} /> {community.members}</span>
+                <span><Lock size={14} /> Encrypted</span>
+              </div>
+            </div>
+            
+            <div className="card-content">
+              <p className="community-description">{community.description}</p>
+              
+              <div className="recent-messages">
+                <h4>Recent Messages ({community.unread} unread)</h4>
+                {conversations
+                  .filter(conv => conv.community === community.id)
+                  .slice(0, 3)
+                  .map(conversation => (
+                    <div key={conversation.id} className={`mini-conversation ${conversation.unread ? 'unread' : ''}`}>
+                      <span className="mini-avatar">{conversation.avatar}</span>
+                      <div className="mini-content">
+                        <span className="mini-name">{conversation.participant}</span>
+                        <span className="mini-message">{conversation.lastMessage.substring(0, 40)}...</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              
+              <button 
+                className="open-inbox-btn"
+                style={{ backgroundColor: community.color }}
+                onClick={() => {
+                  setSelectedCommunity(community.id);
+                  // In a real app, this would navigate to the full inbox view
+                }}
+              >
+                Open Inbox
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderView = () => {
+    switch (view) {
+      case 'unified':
+        return renderUnifiedView();
+      case 'tabbed':
+        return renderTabbedView();
+      case 'sidebar':
+        return renderSidebarView();
+      case 'cards':
+        return renderCardView();
+      default:
+        return renderUnifiedView();
+    }
+  };
+
+  return (
+    <div className="community-inbox">
+      {renderView()}
+    </div>
+  );
+};
+
+export default CommunityInbox; 
