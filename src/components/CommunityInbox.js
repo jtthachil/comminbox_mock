@@ -5,6 +5,7 @@ import './CommunityInbox.css';
 const CommunityInbox = ({ view }) => {
   const [selectedCommunity, setSelectedCommunity] = useState('marketing-agency');
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [showInboxList, setShowInboxList] = useState(false); // For card view inbox list
 
   // Mock data for communities and conversations
   const communities = [
@@ -87,6 +88,33 @@ const CommunityInbox = ({ view }) => {
       timestamp: '3 hours ago',
       unread: true,
       avatar: '🤖'
+    },
+    {
+      id: 6,
+      community: 'startup-founders',
+      participant: 'Lisa Wang',
+      lastMessage: 'Just closed our Series A! Thanks for all the advice.',
+      timestamp: '4 hours ago',
+      unread: false,
+      avatar: '💼'
+    },
+    {
+      id: 7,
+      community: 'design-collective',
+      participant: 'Carlos Rivera',
+      lastMessage: 'Love the new brand guidelines. Very clean and modern.',
+      timestamp: '5 hours ago',
+      unread: true,
+      avatar: '🎯'
+    },
+    {
+      id: 8,
+      community: 'tech-innovators',
+      participant: 'Priya Patel',
+      lastMessage: 'The AI integration is working perfectly. Great job!',
+      timestamp: '6 hours ago',
+      unread: false,
+      avatar: '⚡'
     }
   ];
 
@@ -96,17 +124,33 @@ const CommunityInbox = ({ view }) => {
       1: [
         { id: 1, sender: 'Sarah Chen', message: 'Hi! I wanted to discuss the new campaign strategy we outlined yesterday.', timestamp: '10:30 AM', isOwn: false },
         { id: 2, sender: 'You', message: 'Absolutely! I think the targeting approach is really solid.', timestamp: '10:32 AM', isOwn: true },
-        { id: 3, sender: 'Sarah Chen', message: 'The new campaign strategy looks promising. Should we schedule a call?', timestamp: '10:35 AM', isOwn: false }
+        { id: 3, sender: 'Sarah Chen', message: 'Great! I\'ve been analyzing the demographics and the 25-34 age group shows the highest engagement.', timestamp: '10:33 AM', isOwn: false },
+        { id: 4, sender: 'You', message: 'That aligns perfectly with our buyer personas. Should we increase the budget allocation for that segment?', timestamp: '10:35 AM', isOwn: true },
+        { id: 5, sender: 'Sarah Chen', message: 'The new campaign strategy looks promising. Should we schedule a call?', timestamp: '10:37 AM', isOwn: false }
       ],
       2: [
         { id: 1, sender: 'Mike Rodriguez', message: 'Hey, just finished reviewing the analytics report you sent.', timestamp: '9:45 AM', isOwn: false },
         { id: 2, sender: 'You', message: 'Great! What are your thoughts on the conversion rates?', timestamp: '9:50 AM', isOwn: true },
-        { id: 3, sender: 'Mike Rodriguez', message: 'Thanks for sharing the analytics report. The conversion rates are impressive.', timestamp: '9:55 AM', isOwn: false }
+        { id: 3, sender: 'Mike Rodriguez', message: 'The numbers are really impressive. We\'re seeing a 23% increase from last quarter.', timestamp: '9:52 AM', isOwn: false },
+        { id: 4, sender: 'You', message: 'That\'s fantastic! Which channels are performing best?', timestamp: '9:53 AM', isOwn: true },
+        { id: 5, sender: 'Mike Rodriguez', message: 'Thanks for sharing the analytics report. The conversion rates are impressive.', timestamp: '9:55 AM', isOwn: false }
       ],
       3: [
         { id: 1, sender: 'Alex Thompson', message: 'Hi there! Hope you\'re doing well.', timestamp: 'Yesterday', isOwn: false },
         { id: 2, sender: 'You', message: 'Hey Alex! All good here, how\'s the startup going?', timestamp: 'Yesterday', isOwn: true },
-        { id: 3, sender: 'Alex Thompson', message: 'Looking for feedback on our MVP. Would love to get your thoughts.', timestamp: '1 hour ago', isOwn: false }
+        { id: 3, sender: 'Alex Thompson', message: 'It\'s been quite a journey! We\'ve just launched our beta version.', timestamp: 'Yesterday', isOwn: false },
+        { id: 4, sender: 'You', message: 'That\'s exciting! How\'s the user feedback been so far?', timestamp: 'Yesterday', isOwn: true },
+        { id: 5, sender: 'Alex Thompson', message: 'Looking for feedback on our MVP. Would love to get your thoughts.', timestamp: '1 hour ago', isOwn: false }
+      ],
+      4: [
+        { id: 1, sender: 'Emma Wilson', message: 'Hi! I\'ve been working on the new design system.', timestamp: '2 hours ago', isOwn: false },
+        { id: 2, sender: 'You', message: 'Awesome! I\'m excited to see what you\'ve created.', timestamp: '2 hours ago', isOwn: true },
+        { id: 3, sender: 'Emma Wilson', message: 'The new design system is ready for review. Check it out!', timestamp: '2 hours ago', isOwn: false }
+      ],
+      5: [
+        { id: 1, sender: 'David Park', message: 'Found this great article about emerging AI trends.', timestamp: '3 hours ago', isOwn: false },
+        { id: 2, sender: 'You', message: 'Thanks for sharing! I\'ll take a look.', timestamp: '3 hours ago', isOwn: true },
+        { id: 3, sender: 'David Park', message: 'Interesting article about AI trends. Thought you might find it useful.', timestamp: '3 hours ago', isOwn: false }
       ]
     };
     return messageTemplates[conversationId] || [];
@@ -221,38 +265,7 @@ const CommunityInbox = ({ view }) => {
 
       <div className="chat-area">
         {selectedConversation ? (
-          <div className="chat-content">
-            <div className="chat-header">
-              <div className="chat-participant">
-                <span className="participant-avatar">
-                  {conversations.find(c => c.id === selectedConversation)?.avatar}
-                </span>
-                <div>
-                  <h3>{conversations.find(c => c.id === selectedConversation)?.participant}</h3>
-                  <span className="community-context">
-                    in {communities.find(c => c.id === conversations.find(conv => conv.id === selectedConversation)?.community)?.name}
-                  </span>
-                </div>
-              </div>
-              <div className="chat-actions">
-                <button className="icon-button"><Bell size={16} /></button>
-                <button className="icon-button"><Shield size={16} /></button>
-              </div>
-            </div>
-            <div className="messages-area">
-              <div className="encryption-notice">
-                <Lock size={14} />
-                <span>Messages are end-to-end encrypted</span>
-              </div>
-              <div className="message-placeholder">
-                <p>Select a conversation to start messaging</p>
-              </div>
-            </div>
-            <div className="message-input">
-              <input type="text" placeholder="Type your message..." />
-              <button className="send-button">Send</button>
-            </div>
-          </div>
+          renderChatInterface(conversations.find(c => c.id === selectedConversation))
         ) : (
           <div className="no-conversation">
             <MessageCircle size={48} />
@@ -436,13 +449,17 @@ const CommunityInbox = ({ view }) => {
   const renderCardView = () => {
     const selectedConv = conversations.find(c => c.id === selectedConversation);
     
+    // Show chat interface when a conversation is selected
     if (selectedConversation && selectedConv) {
       return (
         <div className="card-view">
           <div className="view-header">
             <button 
               className="back-to-cards-btn"
-              onClick={() => setSelectedConversation(null)}
+              onClick={() => {
+                setSelectedConversation(null);
+                setShowInboxList(false);
+              }}
             >
               <ArrowLeft size={16} />
               Back to Communities
@@ -453,6 +470,65 @@ const CommunityInbox = ({ view }) => {
       );
     }
 
+    // Show inbox list when "Open Inbox" is clicked
+    if (showInboxList && selectedCommunity) {
+      const community = communities.find(c => c.id === selectedCommunity);
+      const communityConversations = conversations.filter(conv => conv.community === selectedCommunity);
+      
+      return (
+        <div className="card-view">
+          <div className="view-header">
+            <button 
+              className="back-to-cards-btn"
+              onClick={() => {
+                setShowInboxList(false);
+                setSelectedCommunity(null);
+              }}
+            >
+              <ArrowLeft size={16} />
+              Back to Communities
+            </button>
+            <div className="inbox-title">
+              <h2 style={{ color: community.color }}>{community.name}</h2>
+              <p>{community.description}</p>
+            </div>
+          </div>
+          
+          <div className="inbox-list-container">
+            <div className="inbox-stats">
+              <span><Users size={16} /> {community.members} members</span>
+              <span><MessageCircle size={16} /> {communityConversations.length} conversations</span>
+              <span><Lock size={16} /> End-to-end encrypted</span>
+            </div>
+            
+            <div className="inbox-conversations">
+              {communityConversations.map(conversation => (
+                <div 
+                  key={conversation.id} 
+                  className={`inbox-conversation-item ${conversation.unread ? 'unread' : ''}`}
+                  onClick={() => setSelectedConversation(conversation.id)}
+                >
+                  <div className="conversation-avatar">{conversation.avatar}</div>
+                  <div className="conversation-details">
+                    <div className="conversation-header">
+                      <h4>{conversation.participant}</h4>
+                      <span className="timestamp">{conversation.timestamp}</span>
+                    </div>
+                    <p className="last-message">{conversation.lastMessage}</p>
+                    <div className="conversation-footer">
+                      <Lock size={12} className="encryption-icon" />
+                      {conversation.unread && <div className="unread-dot"></div>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Show community cards (default view)
     return (
       <div className="card-view">
         <div className="view-header">
@@ -499,9 +575,7 @@ const CommunityInbox = ({ view }) => {
                   style={{ backgroundColor: community.color }}
                   onClick={() => {
                     setSelectedCommunity(community.id);
-                    // Show first conversation from this community
-                    const firstConv = conversations.find(conv => conv.community === community.id);
-                    if (firstConv) setSelectedConversation(firstConv.id);
+                    setShowInboxList(true);
                   }}
                 >
                   Open Inbox
